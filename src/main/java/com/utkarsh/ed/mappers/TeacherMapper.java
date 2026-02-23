@@ -13,6 +13,9 @@ public interface TeacherMapper {
 	// CREATE
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "availabilities", ignore = true)
+	@Mapping(target = "createdAt", ignore = true)
+	@Mapping(target = "updatedAt", ignore = true)
+	@Mapping(target = "deletedAt", ignore = true)
 	Teacher toEntity(TeacherRequestDTO dto);
 
 	// RESPONSE
@@ -24,5 +27,8 @@ public interface TeacherMapper {
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "availabilities", ignore = true)
+	@Mapping(target = "createdAt", ignore = true)
+	@Mapping(target = "updatedAt", ignore = true)
+	@Mapping(target = "deletedAt", ignore = true)
 	void updateFromDto(TeacherRequestDTO dto, @MappingTarget Teacher teacher);
 }

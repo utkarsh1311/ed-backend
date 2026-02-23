@@ -30,9 +30,9 @@ public class TeacherService {
 
 	//Create Teacher
 	public TeacherResponseDTO createTeacher(TeacherRequestDTO teacherRequestDTO) {
-		if (teacherRepository.existsByEmail(teacherRequestDTO.email())) {
-			logger.warn("Attempt to create teacher with exisiting email {}", teacherRequestDTO.email());
-			throw new DuplicateResourceException("Teacher with email " + teacherRequestDTO.email() + " already exists.");
+		if (teacherRepository.existsByBusinessMail(teacherRequestDTO.businessMail())) {
+			logger.warn("Attempt to create teacher with existing email {}", teacherRequestDTO.businessMail());
+			throw new DuplicateResourceException("Teacher with email " + teacherRequestDTO.businessMail() + " already exists.");
 		}
 
 		Teacher teacher = teacherMapper.toEntity(teacherRequestDTO);

@@ -12,6 +12,9 @@ public class Subject extends BaseEntity {
     @Column(name = "is_special")
     private Boolean isSpecial;
 
+    public Subject() {
+    }
+
     public Subject(String name, Boolean isSpecial) {
         this.name = name;
         this.isSpecial = isSpecial;

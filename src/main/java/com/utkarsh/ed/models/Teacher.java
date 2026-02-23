@@ -14,7 +14,10 @@ public class Teacher extends BaseEntity {
     private String name;
 
     @Column(unique = true)
-    private String email;
+    private String personalEmail;
+
+    @Column(unique = true)
+    private String businessMail;
 
     private String phone;
 
@@ -26,7 +29,7 @@ public class Teacher extends BaseEntity {
 
     public Teacher(String name, String email, String phone) {
         this.name = name;
-        this.email = email;
+        this.personalEmail = email;
         this.phone = phone;
     }
 
@@ -34,12 +37,20 @@ public class Teacher extends BaseEntity {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getPersonalEmail() { return personalEmail; }
+    public void setPersonalEmail(String email) { this.personalEmail = email; }
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
 
     public List<TeacherAvailability> getAvailabilities() { return availabilities; }
     public void setAvailabilities(List<TeacherAvailability> availabilities) { this.availabilities = availabilities; }
+
+	public String getBusinessMail() {
+		return businessMail;
+	}
+
+	public void setBusinessMail(String businessMail) {
+		this.businessMail = businessMail;
+	}
 }

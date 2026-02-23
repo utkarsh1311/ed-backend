@@ -27,7 +27,7 @@ public class TeacherController {
 
 	@PostMapping
 	public ResponseEntity<TeacherResponseDTO> createTeacher(@Valid @RequestBody TeacherRequestDTO teacherRequestDTO) {
-		logger.debug("Creating Teacher with email: {}", teacherRequestDTO.email());
+		logger.debug("Creating Teacher with email: {}", teacherRequestDTO.businessMail());
 		TeacherResponseDTO teacherResponseDTO = teacherService.createTeacher(teacherRequestDTO);
 		logger.info("Teacher created successfully with ID: {}", teacherResponseDTO.id());
 		return ResponseEntity.status(HttpStatus.CREATED).body(teacherResponseDTO);

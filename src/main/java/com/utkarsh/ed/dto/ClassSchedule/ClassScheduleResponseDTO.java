@@ -7,12 +7,12 @@ import com.utkarsh.ed.models.WeekDay;
 import java.time.LocalTime;
 
 public record ClassScheduleResponseDTO(
-		Long id,
-		StudentSummaryDTO student,
-		TeacherSummaryDTO teacher,
-		SubjectSummaryDTO subject,
-		WeekDay dayOfWeek,
-		LocalTime startTime,
-		LocalTime endTime,
-		Integer durationInMinutes,
-		String meetLink) {}
+        Long id,
+        StudentSummaryDTO student,
+        TeacherSummaryDTO teacher,
+        SubjectSummaryDTO subject,
+        WeekDay dayOfWeek,
+        LocalTime startTime,
+        LocalTime endTime,
+        int durationMinutes,
+        String meetLink) {}

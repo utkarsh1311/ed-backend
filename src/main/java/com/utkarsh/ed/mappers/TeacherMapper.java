@@ -10,28 +10,28 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface TeacherMapper {
 
-	// CREATE
-	@Mapping(target = "id", ignore = true)
-	@Mapping(target = "availabilities", ignore = true)
-	@Mapping(target = "createdAt", ignore = true)
-	@Mapping(target = "updatedAt", ignore = true)
-	@Mapping(target = "deletedAt", ignore = true)
-	Teacher toEntity(TeacherRequestDTO dto);
+    // CREATE
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "availabilities", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
+    Teacher toEntity(TeacherRequestDTO dto);
 
-	// RESPONSE
-	TeacherResponseDTO toResponse(Teacher teacher);
+    // RESPONSE
+    TeacherResponseDTO toResponse(Teacher teacher);
 
-	List<TeacherResponseDTO> toResponseList(List<Teacher> teachers);
+    List<TeacherResponseDTO> toResponseList(List<Teacher> teachers);
 
-	// SUMMARY
-	TeacherSummaryDTO toSummary(Teacher teacher);
+    // SUMMARY
+    TeacherSummaryDTO toSummary(Teacher teacher);
 
-	// UPDATE (PATCH style)
-	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-	@Mapping(target = "id", ignore = true)
-	@Mapping(target = "availabilities", ignore = true)
-	@Mapping(target = "createdAt", ignore = true)
-	@Mapping(target = "updatedAt", ignore = true)
-	@Mapping(target = "deletedAt", ignore = true)
-	void updateFromDto(TeacherRequestDTO dto, @MappingTarget Teacher teacher);
+    // UPDATE (PATCH style)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "availabilities", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
+    void updateFromDto(TeacherRequestDTO dto, @MappingTarget Teacher teacher);
 }

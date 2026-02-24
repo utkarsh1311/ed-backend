@@ -6,127 +6,129 @@ import java.time.LocalTime;
 @Entity
 public class ClassSchedule extends BaseEntity {
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "student_id", nullable = false)
-	private Student student;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id", nullable = false)
+    private Student student;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "teacher_id", nullable = false)
-	private Teacher teacher;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id", nullable = false)
+    private Teacher teacher;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "subject_id", nullable = false)
-	private Subject subject;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id", nullable = false)
+    private Subject subject;
 
-	@Column(name = "day_of_week", nullable = false)
-	@Enumerated(EnumType.STRING)
-	private WeekDay dayOfWeek;
+    @Column(name = "day_of_week", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private WeekDay dayOfWeek;
 
-	@Column(name = "start_time", nullable = false)
-	private LocalTime startTime;
+    @Column(name = "start_time", nullable = false)
+    private LocalTime startTime;
 
-	@Column(name = "duration_in_minutes")
-	private int durationMinutes = 60;
+    @Column(name = "duration_in_minutes")
+    private int durationMinutes = 60;
 
-	@Column(name = "end_time", nullable = false)
-	private LocalTime endTime;
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
 
-	@Column(name = "meet_link", nullable = false)
-	private String meetLink;
+    @Column(name = "meet_link", nullable = false)
+    private String meetLink;
 
-	@Enumerated(EnumType.STRING)
-	private ScheduleStatus status = ScheduleStatus.ACTIVE;
+    @Enumerated(EnumType.STRING)
+    private ScheduleStatus status = ScheduleStatus.ACTIVE;
 
-	public ClassSchedule(
-			Student student,
-			Teacher teacher,
-			Subject subject,
-			WeekDay dayOfWeek,
-			LocalTime startTime,
-			int durationMinutes,
-			LocalTime endTime,
-			String meetLink,
-			ScheduleStatus status) {
-		this.student = student;
-		this.teacher = teacher;
-		this.subject = subject;
-		this.dayOfWeek = dayOfWeek;
-		this.startTime = startTime;
-		this.durationMinutes = durationMinutes;
-		this.endTime = endTime;
-		this.meetLink = meetLink;
-		this.status = status;
-	}
+    public ClassSchedule() {}
 
-	public Student getStudent() {
-		return student;
-	}
+    public ClassSchedule(
+            Student student,
+            Teacher teacher,
+            Subject subject,
+            WeekDay dayOfWeek,
+            LocalTime startTime,
+            int durationMinutes,
+            LocalTime endTime,
+            String meetLink,
+            ScheduleStatus status) {
+        this.student = student;
+        this.teacher = teacher;
+        this.subject = subject;
+        this.dayOfWeek = dayOfWeek;
+        this.startTime = startTime;
+        this.durationMinutes = durationMinutes;
+        this.endTime = endTime;
+        this.meetLink = meetLink;
+        this.status = status;
+    }
 
-	public void setStudent(Student student) {
-		this.student = student;
-	}
+    public Student getStudent() {
+        return student;
+    }
 
-	public Teacher getTeacher() {
-		return teacher;
-	}
+    public void setStudent(Student student) {
+        this.student = student;
+    }
 
-	public void setTeacher(Teacher teacher) {
-		this.teacher = teacher;
-	}
+    public Teacher getTeacher() {
+        return teacher;
+    }
 
-	public Subject getSubject() {
-		return subject;
-	}
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
 
-	public void setSubject(Subject subject) {
-		this.subject = subject;
-	}
+    public Subject getSubject() {
+        return subject;
+    }
 
-	public WeekDay getDayOfWeek() {
-		return dayOfWeek;
-	}
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
 
-	public void setDayOfWeek(WeekDay dayOfWeek) {
-		this.dayOfWeek = dayOfWeek;
-	}
+    public WeekDay getDayOfWeek() {
+        return dayOfWeek;
+    }
 
-	public LocalTime getStartTime() {
-		return startTime;
-	}
+    public void setDayOfWeek(WeekDay dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
 
-	public void setStartTime(LocalTime startTime) {
-		this.startTime = startTime;
-	}
+    public LocalTime getStartTime() {
+        return startTime;
+    }
 
-	public int getDurationMinutes() {
-		return durationMinutes;
-	}
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
 
-	public void setDurationMinutes(int durationMinutes) {
-		this.durationMinutes = durationMinutes;
-	}
+    public int getDurationMinutes() {
+        return durationMinutes;
+    }
 
-	public LocalTime getEndTime() {
-		return endTime;
-	}
+    public void setDurationMinutes(int durationMinutes) {
+        this.durationMinutes = durationMinutes;
+    }
 
-	public void setEndTime(LocalTime endTime) {
-		this.endTime = endTime;
-	}
+    public LocalTime getEndTime() {
+        return endTime;
+    }
 
-	public String getMeetLink() {
-		return meetLink;
-	}
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
 
-	public void setMeetLink(String meetLink) {
-		this.meetLink = meetLink;
-	}
+    public String getMeetLink() {
+        return meetLink;
+    }
 
-	public ScheduleStatus getStatus() {
-		return status;
-	}
+    public void setMeetLink(String meetLink) {
+        this.meetLink = meetLink;
+    }
 
-	public void setStatus(ScheduleStatus status) {
-		this.status = status;
-	}
+    public ScheduleStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ScheduleStatus status) {
+        this.status = status;
+    }
 }

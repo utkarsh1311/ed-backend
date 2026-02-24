@@ -9,8 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class ClassScheduleSpecification {
 
-    private ClassScheduleSpecification() {
-    }
+    private ClassScheduleSpecification() {}
 
     public static Specification<ClassSchedule> build(ClassScheduleFilter filter) {
         return (root, query, cb) -> {

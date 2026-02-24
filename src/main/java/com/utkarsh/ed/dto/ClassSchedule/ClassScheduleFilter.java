@@ -4,5 +4,4 @@ import com.utkarsh.ed.models.ScheduleStatus;
 import com.utkarsh.ed.models.WeekDay;
 
 public record ClassScheduleFilter(
-        Long teacherId, Long studentId, Long subjectId, WeekDay dayOfWeek, ScheduleStatus status) {
-}
+        Long teacherId, Long studentId, Long subjectId, WeekDay dayOfWeek, ScheduleStatus status) {}

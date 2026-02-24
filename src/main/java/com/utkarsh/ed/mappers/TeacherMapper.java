@@ -2,10 +2,10 @@ package com.utkarsh.ed.mappers;
 
 import com.utkarsh.ed.dto.Teacher.TeacherRequestDTO;
 import com.utkarsh.ed.dto.Teacher.TeacherResponseDTO;
+import com.utkarsh.ed.dto.Teacher.TeacherSummaryDTO;
 import com.utkarsh.ed.models.Teacher;
-import org.mapstruct.*;
-
 import java.util.List;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface TeacherMapper {
@@ -22,6 +22,9 @@ public interface TeacherMapper {
 	TeacherResponseDTO toResponse(Teacher teacher);
 
 	List<TeacherResponseDTO> toResponseList(List<Teacher> teachers);
+
+	// SUMMARY
+	TeacherSummaryDTO toSummary(Teacher teacher);
 
 	// UPDATE (PATCH style)
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

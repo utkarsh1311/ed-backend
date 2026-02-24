@@ -1,3 +1,7 @@
 package com.utkarsh.ed.models;
 
-enum ScheduleStatus {ACTIVE, PAUSED, ARCHIVED}
+public enum ScheduleStatus {
+	ACTIVE,
+	PAUSED,
+	ARCHIVED
+}

@@ -8,5 +8,4 @@ public record StudentResponseDTO(
 		String parentPhone,
 		String fatherName,
 		String motherName,
-		Integer grade) {
-}
+		Integer grade) {}

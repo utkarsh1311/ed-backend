@@ -27,12 +27,14 @@ public class TeacherService {
 		this.teacherMapper = teacherMapper;
 	}
 
-
-	//Create Teacher
+	// Create Teacher
 	public TeacherResponseDTO createTeacher(TeacherRequestDTO teacherRequestDTO) {
 		if (teacherRepository.existsByBusinessMail(teacherRequestDTO.businessMail())) {
-			logger.warn("Attempt to create teacher with existing email {}", teacherRequestDTO.businessMail());
-			throw new DuplicateResourceException("Teacher with email " + teacherRequestDTO.businessMail() + " already exists.");
+			logger.warn(
+					"Attempt to create teacher with existing email {}",
+					teacherRequestDTO.businessMail());
+			throw new DuplicateResourceException(
+					"Teacher with email " + teacherRequestDTO.businessMail() + " already exists.");
 		}
 
 		Teacher teacher = teacherMapper.toEntity(teacherRequestDTO);
@@ -40,30 +42,39 @@ public class TeacherService {
 		return teacherMapper.toResponse(savedTeacher);
 	}
 
-	//Get All Teachers
+	// Get All Teachers
 	@Transactional(readOnly = true)
 	public Page<TeacherResponseDTO> getAllTeachers(Pageable pageable) {
-		return teacherRepository.findAll(pageable)
-				.map(teacherMapper::toResponse);
+		return teacherRepository.findAll(pageable).map(teacherMapper::toResponse);
 	}
 
-	//Get teacher by id
+	// Get teacher by id
 	public TeacherResponseDTO getTeacherById(Long id) {
-		Teacher teacher = teacherRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Teacher not found with ID: " + id));
+		Teacher teacher =
+				teacherRepository
+						.findById(id)
+						.orElseThrow(
+								() ->
+										new ResourceNotFoundException(
+												"Teacher not found with ID: " + id));
 		return teacherMapper.toResponse(teacher);
 	}
 
-	//update teacher
+	// update teacher
 	public TeacherResponseDTO updateTeacher(Long id, TeacherRequestDTO teacherRequestDTO) {
-		Teacher existingTeacher = teacherRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Teacher not found with ID: " + id));
+		Teacher existingTeacher =
+				teacherRepository
+						.findById(id)
+						.orElseThrow(
+								() ->
+										new ResourceNotFoundException(
+												"Teacher not found with ID: " + id));
 		teacherMapper.updateFromDto(teacherRequestDTO, existingTeacher);
 		Teacher updatedTeacher = teacherRepository.save(existingTeacher);
 		return teacherMapper.toResponse(updatedTeacher);
 	}
 
-	//Delete Teacher
+	// Delete Teacher
 	@Transactional
 	public void deleteTeacher(Long id) {
 		if (!teacherRepository.existsById(id)) {

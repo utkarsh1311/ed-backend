@@ -11,7 +11,9 @@ import com.utkarsh.ed.repositories.SubjectRepository;
 import com.utkarsh.ed.repositories.TeacherRepository;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 @Mapper(componentModel = "spring")
 public abstract class ClassScheduleMapper {
 

@@ -31,7 +31,7 @@ public class ClassSessionService {
 
     public Page<SessionDetailResponseDTO> getAllSessions(ClassSessionFilter filter, Pageable pageable) {
         Page<ClassSession> classSessions =
-                classSessionRepository.findAll(ClassSessionSpecification.filter(filter), pageable);
+                classSessionRepository.findAll(ClassSessionSpecification.build(filter), pageable);
         return classSessions.map(classSessionMapper::toDetailDTO);
     }
 

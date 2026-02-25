@@ -25,9 +25,4 @@ public class ClassSessionController {
         Page<SessionDetailResponseDTO> sessions = classSessionService.getAllSessions(filter, pageable);
         return ResponseEntity.ok(PagedResponse.from(sessions));
     }
-
-
-
-
-
 }

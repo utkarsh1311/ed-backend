@@ -2,9 +2,11 @@ package com.utkarsh.ed.repositories;
 
 import com.utkarsh.ed.models.ClassSchedule;
 import com.utkarsh.ed.models.WeekDay;
+
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +21,7 @@ public interface ClassScheduleRepository
     Optional<ClassSchedule> findById(Long id);
 
     @EntityGraph(attributePaths = {"student", "teacher", "subject"})
-    List<ClassSchedule> findAll(Specification<ClassSchedule> spec);
+    Page<ClassSchedule> findAll(Specification<ClassSchedule> spec, Pageable pageable);
 
     @Query("SELECT COUNT(cs) > 0 FROM ClassSchedule cs "
             + "WHERE cs.dayOfWeek = :dayOfWeek "

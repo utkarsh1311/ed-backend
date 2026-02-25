@@ -10,12 +10,13 @@ import com.utkarsh.ed.models.ClassSchedule;
 import com.utkarsh.ed.models.WeekDay;
 import com.utkarsh.ed.repositories.ClassScheduleRepository;
 import com.utkarsh.ed.repositories.ClassScheduleSpecification;
+
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -66,11 +67,10 @@ public class ClassScheduleService {
     }
 
     // Get all classSchedules with optional filters
-    public List<ClassScheduleResponseDTO> getAllClassSchedules(ClassScheduleFilter filter) {
-        Specification<ClassSchedule> spec = ClassScheduleSpecification.build(filter);
-        return classScheduleRepository.findAll(spec).stream()
-                .map(classScheduleMapper::toResponse)
-                .toList();
+    public Page<ClassScheduleResponseDTO> getAllClassSchedules(ClassScheduleFilter filter, Pageable pageable) {
+        Page<ClassSchedule> classSchedules =
+                classScheduleRepository.findAll(ClassScheduleSpecification.build(filter), pageable);
+        return classSchedules.map(classScheduleMapper::toResponse);
     }
 
     // get a class Schedule

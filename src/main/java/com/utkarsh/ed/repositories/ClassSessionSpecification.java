@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class ClassSessionSpecification {
 
-    public static Specification<ClassSession> filter(ClassSessionFilter filter) {
+    public static Specification<ClassSession> build(ClassSessionFilter filter) {
 
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();

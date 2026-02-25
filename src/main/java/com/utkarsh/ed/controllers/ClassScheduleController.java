@@ -3,11 +3,14 @@ package com.utkarsh.ed.controllers;
 import com.utkarsh.ed.dto.ClassSchedule.ClassScheduleFilter;
 import com.utkarsh.ed.dto.ClassSchedule.ClassScheduleRequestDTO;
 import com.utkarsh.ed.dto.ClassSchedule.ClassScheduleResponseDTO;
+import com.utkarsh.ed.dto.PagedResponse;
 import com.utkarsh.ed.services.ClassScheduleService;
 import jakarta.validation.Valid;
-import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +38,10 @@ public class ClassScheduleController {
 
     // Get all Class Schedules
     @GetMapping
-    public ResponseEntity<List<ClassScheduleResponseDTO>> getAllClassSchedules(
-            @ModelAttribute ClassScheduleFilter filter) {
-        List<ClassScheduleResponseDTO> classSchedules = classScheduleService.getAllClassSchedules(filter);
-        return ResponseEntity.ok(classSchedules);
+    public ResponseEntity<PagedResponse<ClassScheduleResponseDTO>> getAllClassSchedules(
+            @ModelAttribute ClassScheduleFilter filter, Pageable pageable) {
+        Page<ClassScheduleResponseDTO> classSchedules = classScheduleService.getAllClassSchedules(filter, pageable);
+        return ResponseEntity.ok(PagedResponse.from(classSchedules));
     }
 
     // Get class schedule by id

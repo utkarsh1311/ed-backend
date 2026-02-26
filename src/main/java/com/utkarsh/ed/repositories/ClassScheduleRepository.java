@@ -2,7 +2,6 @@ package com.utkarsh.ed.repositories;
 
 import com.utkarsh.ed.models.ClassSchedule;
 import com.utkarsh.ed.models.WeekDay;
-
 import java.time.LocalTime;
 import java.util.Optional;
 import org.springframework.data.domain.Page;

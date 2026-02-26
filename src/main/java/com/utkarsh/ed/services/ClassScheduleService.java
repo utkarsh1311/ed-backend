@@ -10,7 +10,6 @@ import com.utkarsh.ed.models.ClassSchedule;
 import com.utkarsh.ed.models.WeekDay;
 import com.utkarsh.ed.repositories.ClassScheduleRepository;
 import com.utkarsh.ed.repositories.ClassScheduleSpecification;
-
 import java.time.LocalTime;
 import java.util.Objects;
 import org.slf4j.Logger;

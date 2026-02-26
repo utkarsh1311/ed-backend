@@ -3,7 +3,7 @@ package com.utkarsh.ed.dto.ClassSchedule;
 import com.utkarsh.ed.dto.Student.StudentSummaryDTO;
 import com.utkarsh.ed.dto.Subject.SubjectSummaryDTO;
 import com.utkarsh.ed.dto.Teacher.TeacherSummaryDTO;
-import com.utkarsh.ed.models.WeekDay;
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 public record ClassScheduleResponseDTO(
@@ -11,7 +11,7 @@ public record ClassScheduleResponseDTO(
         StudentSummaryDTO student,
         TeacherSummaryDTO teacher,
         SubjectSummaryDTO subject,
-        WeekDay dayOfWeek,
+        DayOfWeek dayOfWeek,
         LocalTime startTime,
         LocalTime endTime,
         int durationMinutes,

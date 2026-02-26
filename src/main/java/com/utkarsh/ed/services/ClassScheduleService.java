@@ -7,11 +7,18 @@ import com.utkarsh.ed.exceptions.BusinessRuleException;
 import com.utkarsh.ed.exceptions.ResourceNotFoundException;
 import com.utkarsh.ed.mappers.ClassScheduleMapper;
 import com.utkarsh.ed.models.ClassSchedule;
-import com.utkarsh.ed.models.WeekDay;
+import com.utkarsh.ed.models.ClassSession;
+import com.utkarsh.ed.models.SessionStatus;
 import com.utkarsh.ed.repositories.ClassScheduleRepository;
 import com.utkarsh.ed.repositories.ClassScheduleSpecification;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Objects;
+
+import com.utkarsh.ed.repositories.ClassSessionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -24,16 +31,18 @@ public class ClassScheduleService {
     private static final Logger logger = LoggerFactory.getLogger(ClassScheduleService.class);
 
     private final ClassScheduleRepository classScheduleRepository;
+    private final ClassSessionRepository classSessionRepository;
     private final ClassScheduleMapper classScheduleMapper;
 
     public ClassScheduleService(
-            ClassScheduleRepository classScheduleRepository, ClassScheduleMapper classScheduleMapper) {
+            ClassScheduleRepository classScheduleRepository, ClassSessionRepository classSessionRepository, ClassScheduleMapper classScheduleMapper) {
         this.classScheduleRepository = classScheduleRepository;
+        this.classSessionRepository = classSessionRepository;
         this.classScheduleMapper = classScheduleMapper;
     }
 
     private void validateConflict(
-            Long teacherId, Long studentId, WeekDay day, LocalTime start, LocalTime end, Long excludeId) {
+            Long teacherId, Long studentId, DayOfWeek day, LocalTime start, LocalTime end, Long excludeId) {
         boolean hasConflict =
                 classScheduleRepository.existsOverlappingSchedule(teacherId, studentId, day, start, end, excludeId);
 
@@ -41,6 +50,28 @@ public class ClassScheduleService {
             logger.warn("Schedule conflict detected for Teacher {} or Student {} on {}", teacherId, studentId, day);
             throw new BusinessRuleException("The teacher or student already has a class scheduled during this time.");
         }
+    }
+
+    private void createInitialClassSessions(ClassSchedule classSchedule) {
+        logger.info("Creating Initial class for ClassSchedule with ID: {}", classSchedule.getId());
+        LocalDate nextOccuranceDate = LocalDate.now().with(TemporalAdjusters.next(classSchedule.getDayOfWeek()));
+        LocalDateTime scheduledAt = LocalDateTime.of(nextOccuranceDate, classSchedule.getStartTime());
+
+        ClassSession classSession = new ClassSession(
+                classSchedule,
+                classSchedule.getTeacher(),
+                scheduledAt,
+                null,
+                null,
+                SessionStatus.SCHEDULED,
+                null,
+                null,
+                false,
+                null);
+
+        classSessionRepository.save(classSession);
+
+        logger.info("Initial class session generated for ClassSchedule with ID: {}", classSchedule.getId());
     }
 
     // Create Class Schedule
@@ -60,6 +91,7 @@ public class ClassScheduleService {
         classSchedule.setEndTime(calculateEndTime);
 
         ClassSchedule savedSchedule = classScheduleRepository.save(classSchedule);
+        createInitialClassSessions(savedSchedule);
         logger.info("ClassSchedule created with ID: {}", savedSchedule.getId());
 
         return classScheduleMapper.toResponse(savedSchedule);
@@ -101,7 +133,7 @@ public class ClassScheduleService {
             Long studentId = Objects.requireNonNullElse(
                     classScheduleRequestDTO.studentId(),
                     exisitingClassSchedule.getStudent().getId());
-            WeekDay day = Objects.requireNonNullElse(
+            DayOfWeek day = Objects.requireNonNullElse(
                     classScheduleRequestDTO.dayOfWeek(), exisitingClassSchedule.getDayOfWeek());
             LocalTime start = Objects.requireNonNullElse(
                     classScheduleRequestDTO.startTime(), exisitingClassSchedule.getStartTime());

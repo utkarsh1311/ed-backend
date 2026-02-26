@@ -1,8 +1,10 @@
 package com.utkarsh.ed.repositories;
 
 import com.utkarsh.ed.models.ClassSchedule;
-import com.utkarsh.ed.models.WeekDay;
+import com.utkarsh.ed.models.ScheduleStatus;
+import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,8 +34,10 @@ public interface ClassScheduleRepository
     boolean existsOverlappingSchedule(
             @Param("teacherId") Long teacherId,
             @Param("studentId") Long studentId,
-            @Param("dayOfWeek") WeekDay dayOfWeek,
+            @Param("dayOfWeek") DayOfWeek dayOfWeek,
             @Param("newStartTime") LocalTime newStartTime,
             @Param("newEndTime") LocalTime newEndTime,
             @Param("excludeId") Long excludeId);
+
+    List<ClassSchedule> findAllByStatus(ScheduleStatus status);
 }

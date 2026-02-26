@@ -9,6 +9,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @SQLDelete(sql = "UPDATE teacher SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
+@Table(name = "teachers")
 public class Teacher extends BaseEntity {
 
     private String name;

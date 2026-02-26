@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "class_sessions")
 public class ClassSession extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,6 +38,8 @@ public class ClassSession extends BaseEntity {
 
     @Column(name = "test_score")
     private Double testScore;
+
+    public ClassSession() {}
 
     public ClassSession(
             ClassSchedule classSchedule,

@@ -1,9 +1,11 @@
 package com.utkarsh.ed.models;
 
 import jakarta.persistence.*;
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 @Entity
+@Table(name = "class_schedules")
 public class ClassSchedule extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -20,15 +22,15 @@ public class ClassSchedule extends BaseEntity {
 
     @Column(name = "day_of_week", nullable = false)
     @Enumerated(EnumType.STRING)
-    private WeekDay dayOfWeek;
+    private DayOfWeek dayOfWeek;
 
-    @Column(name = "start_time", nullable = false)
+    @Column(name = "start_time", nullable = false, columnDefinition = "TIME")
     private LocalTime startTime;
 
     @Column(name = "duration_in_minutes")
     private int durationMinutes = 60;
 
-    @Column(name = "end_time", nullable = false)
+    @Column(name = "end_time", nullable = false, columnDefinition = "TIME")
     private LocalTime endTime;
 
     @Column(name = "meet_link", nullable = false)
@@ -43,7 +45,7 @@ public class ClassSchedule extends BaseEntity {
             Student student,
             Teacher teacher,
             Subject subject,
-            WeekDay dayOfWeek,
+            DayOfWeek dayOfWeek,
             LocalTime startTime,
             int durationMinutes,
             LocalTime endTime,
@@ -84,11 +86,11 @@ public class ClassSchedule extends BaseEntity {
         this.subject = subject;
     }
 
-    public WeekDay getDayOfWeek() {
+    public DayOfWeek getDayOfWeek() {
         return dayOfWeek;
     }
 
-    public void setDayOfWeek(WeekDay dayOfWeek) {
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
     }
 

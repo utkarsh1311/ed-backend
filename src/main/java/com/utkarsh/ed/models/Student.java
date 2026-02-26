@@ -2,9 +2,12 @@ package com.utkarsh.ed.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
 import java.util.Objects;
 
 @Entity
+@Table(name = "students")
 public class Student extends BaseEntity {
 
     @Column(name = "name")

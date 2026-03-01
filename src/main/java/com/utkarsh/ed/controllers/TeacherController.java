@@ -4,6 +4,12 @@ import com.utkarsh.ed.dto.PagedResponse;
 import com.utkarsh.ed.dto.Teacher.TeacherRequestDTO;
 import com.utkarsh.ed.dto.Teacher.TeacherResponseDTO;
 import com.utkarsh.ed.services.TeacherService;
+import com.utkarsh.ed.swagger.ApiResponsesCreate;
+import com.utkarsh.ed.swagger.ApiResponsesDelete;
+import com.utkarsh.ed.swagger.ApiResponses404;
+import com.utkarsh.ed.swagger.ApiResponsesUpdate;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,14 +20,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.utkarsh.ed.exceptions.ErrorResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Teachers", description = "Manage teacher profiles (India-based)")
 @RestController
@@ -35,13 +33,7 @@ public class TeacherController {
     }
 
     @Operation(summary = "Create a teacher", description = "Registers a new teacher. Both emails must be unique.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Teacher created successfully"),
-        @ApiResponse(responseCode = "400", description = "Validation failed",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "409", description = "Email already registered",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
+    @ApiResponsesCreate
     @PostMapping
     public ResponseEntity<TeacherResponseDTO> createTeacher(@Valid @RequestBody TeacherRequestDTO teacherRequestDTO) {
         logger.debug("Creating Teacher with email: {}", teacherRequestDTO.businessMail());
@@ -50,8 +42,7 @@ public class TeacherController {
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherResponseDTO);
     }
 
-    @Operation(summary = "List all teachers", description = "Paginated list of all active teachers.")
-    @ApiResponse(responseCode = "200", description = "Page of teachers")
+    @Operation(summary = "List all teachers")
     @GetMapping
     public ResponseEntity<PagedResponse<TeacherResponseDTO>> getAllTeachers(
             @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
@@ -66,11 +57,7 @@ public class TeacherController {
     }
 
     @Operation(summary = "Get teacher by ID")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Teacher found"),
-        @ApiResponse(responseCode = "404", description = "Teacher not found",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
+    @ApiResponses404
     @GetMapping("/{id}")
     public ResponseEntity<TeacherResponseDTO> getTeacherById(@PathVariable Long id) {
         logger.info("Fetching teacher with ID: {}", id);
@@ -79,14 +66,8 @@ public class TeacherController {
         return ResponseEntity.ok(teacher);
     }
 
-    @Operation(summary = "Update teacher", description = "Partially updates a teacher's details.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Teacher updated"),
-        @ApiResponse(responseCode = "400", description = "Validation failed",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "404", description = "Teacher not found",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
+    @Operation(summary = "Update teacher")
+    @ApiResponsesUpdate
     @PatchMapping("/{id}")
     public ResponseEntity<TeacherResponseDTO> updateTeacher(
             @PathVariable Long id, @Valid @RequestBody TeacherRequestDTO teacherRequestDTO) {
@@ -97,11 +78,7 @@ public class TeacherController {
     }
 
     @Operation(summary = "Delete teacher", description = "Soft-deletes the teacher and their availabilities.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "204", description = "Teacher deleted"),
-        @ApiResponse(responseCode = "404", description = "Teacher not found",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
+    @ApiResponsesDelete
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTeacher(@PathVariable Long id) {
         teacherService.deleteTeacher(id);

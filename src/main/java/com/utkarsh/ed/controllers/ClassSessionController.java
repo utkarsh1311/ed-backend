@@ -7,20 +7,16 @@ import com.utkarsh.ed.dto.ClassSession.SessionDetailResponseDTO;
 import com.utkarsh.ed.dto.ClassSession.SessionRescheduleRequestDTO;
 import com.utkarsh.ed.dto.PagedResponse;
 import com.utkarsh.ed.services.ClassSessionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.utkarsh.ed.exceptions.ErrorResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springdoc.core.annotations.ParameterObject;
 
 @Tag(name = "Class Sessions", description = "Individual session occurrences. Auto-generated from Class Schedules weekly.")
 @RestController
@@ -34,8 +30,7 @@ public class ClassSessionController {
     }
 
     @Operation(summary = "List all class sessions",
-        description = "Filterable, paginated list of sessions. Filter by teacher, student, subject, weekday, status, or date range. Date range filters on `scheduledAt` (current actual slot).")
-    @ApiResponse(responseCode = "200", description = "Page of sessions")
+        description = "Filterable and paginated. Date range filters on scheduledAt (current actual slot).")
     @GetMapping
     public ResponseEntity<PagedResponse<SessionDetailResponseDTO>> getAllSessions(
             @ParameterObject @ModelAttribute ClassSessionFilter filter, Pageable pageable) {
@@ -45,17 +40,13 @@ public class ClassSessionController {
 
     // TODO: teacherID should come from JWT principal once auth is implemented
     @Operation(summary = "Complete a session",
-        description = "Marks a SCHEDULED or RESCHEDULED session as COMPLETED. Records actual start/end times and optional test score. Only the assigned teacher may complete a session.")
+        description = "Marks a SCHEDULED or RESCHEDULED session as COMPLETED. Only the assigned teacher may complete a session.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Session completed"),
-        @ApiResponse(responseCode = "400", description = "Validation failed (e.g. end before start, missing test score)",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "403", description = "Caller is not the assigned teacher",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "404", description = "Session not found",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "409", description = "Session is already cancelled",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+        @ApiResponse(responseCode = "400", description = "Validation failed (e.g. end before start, missing test score)"),
+        @ApiResponse(responseCode = "403", description = "Caller is not the assigned teacher"),
+        @ApiResponse(responseCode = "404", description = "Session not found"),
+        @ApiResponse(responseCode = "409", description = "Session is already cancelled")
     })
     @PostMapping("/{id}/complete")
     public ResponseEntity<SessionDetailResponseDTO> completeSession(
@@ -67,13 +58,11 @@ public class ClassSessionController {
         return ResponseEntity.ok(sessionDetailResponseDTO);
     }
 
-    @Operation(summary = "Cancel a session", description = "Cancels a SCHEDULED or RESCHEDULED session. Completed sessions cannot be cancelled.")
+    @Operation(summary = "Cancel a session")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Session cancelled"),
-        @ApiResponse(responseCode = "404", description = "Session not found",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "409", description = "Session is already cancelled or completed",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+        @ApiResponse(responseCode = "404", description = "Session not found"),
+        @ApiResponse(responseCode = "409", description = "Session is already cancelled or completed")
     })
     @PostMapping("/{id}/cancel")
     public ResponseEntity<SessionDetailResponseDTO> cancelSession(
@@ -83,23 +72,13 @@ public class ClassSessionController {
     }
 
     @Operation(summary = "Reschedule a session",
-        description = """
-            Moves a SCHEDULED or RESCHEDULED session to a new time slot. Business rules:
-            - New time must be in the future (`@Future` validated)
-            - New time must be within 7 days of the current `scheduledAt` (same occurrence window)
-            - No teacher or student overlap with another active session in the new slot
-            The previous `scheduledAt` is saved in `originalScheduledAt` for audit purposes.
-            """)
+        description = "New time must be in the future and within 7 days of current scheduledAt. Validates no teacher/student conflicts.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Session rescheduled"),
-        @ApiResponse(responseCode = "400", description = "New time is not in the future",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "404", description = "Session not found",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "409", description = "Session is cancelled or completed",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "422", description = "Business rule violation: same slot / outside week / teacher or student conflict",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+        @ApiResponse(responseCode = "400", description = "New time is not in the future"),
+        @ApiResponse(responseCode = "404", description = "Session not found"),
+        @ApiResponse(responseCode = "409", description = "Session is cancelled or completed"),
+        @ApiResponse(responseCode = "422", description = "Same slot / outside week boundary / teacher or student conflict")
     })
     @PostMapping("/{id}/reschedule")
     public ResponseEntity<SessionDetailResponseDTO> rescheduleSession(

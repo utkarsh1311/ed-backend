@@ -3,6 +3,7 @@ package com.utkarsh.ed.repositories;
 import com.utkarsh.ed.dto.ClassSession.ClassSessionFilter;
 import com.utkarsh.ed.models.ClassSchedule;
 import com.utkarsh.ed.models.ClassSession;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -32,8 +33,19 @@ public class ClassSessionSpecification {
                 predicates.add(scheduleJoin.get("subject").get("id").in(filter.subjectIds()));
             }
 
+            // Filter by the actual day of the session's scheduledAt, NOT the schedule's
+            // recurring dayOfWeek. This correctly handles rescheduled sessions that
+            // moved to a different day.
             if (filter.weekdays() != null && !filter.weekdays().isEmpty()) {
-                predicates.add(scheduleJoin.get("dayOfWeek").in(filter.weekdays()));
+                Expression<Integer> dayOfWeek = cb.function(
+                        "EXTRACT", Integer.class, cb.literal("DOW"), root.get("scheduledAt"));
+                // PostgreSQL DOW: Sunday=0 .. Saturday=6
+                // java.time.DayOfWeek: Monday=1 .. Sunday=7
+                // Map Java DayOfWeek values to PostgreSQL DOW values
+                List<Integer> pgDowValues = filter.weekdays().stream()
+                        .map(d -> d.getValue() % 7) // Mon=1, Tue=2 ... Sat=6, Sun=0
+                        .toList();
+                predicates.add(dayOfWeek.in(pgDowValues));
             }
 
             if (filter.sessionStatuses() != null && !filter.sessionStatuses().isEmpty()) {

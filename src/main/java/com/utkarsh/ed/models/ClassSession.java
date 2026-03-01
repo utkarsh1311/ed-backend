@@ -2,8 +2,12 @@ package com.utkarsh.ed.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
+@SQLDelete(sql = "UPDATE class_sessions SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 @Table(name = "class_sessions")
 public class ClassSession extends BaseEntity {
 
@@ -32,6 +36,15 @@ public class ClassSession extends BaseEntity {
 
     @Column(name = "cancellation_reason")
     private String cancellationReason;
+
+    /**
+     * Stores the scheduledAt value from just before the most recent reschedule.
+     * null  → session was never rescheduled.
+     * non-null → session has been rescheduled at least once; this is the last time it was moved FROM.
+     * Overwritten on every successive reschedule so it always reflects the immediately-previous slot.
+     */
+    @Column(name = "original_scheduled_at")
+    private LocalDateTime originalScheduledAt;
 
     @Column(name = "is_test")
     private boolean isTest = false;
@@ -110,6 +123,14 @@ public class ClassSession extends BaseEntity {
 
     public void setCancellationReason(String cancellationReason) {
         this.cancellationReason = cancellationReason;
+    }
+
+    public LocalDateTime getOriginalScheduledAt() {
+        return originalScheduledAt;
+    }
+
+    public void setOriginalScheduledAt(LocalDateTime originalScheduledAt) {
+        this.originalScheduledAt = originalScheduledAt;
     }
 
     public boolean isTest() {

@@ -11,14 +11,13 @@ import com.utkarsh.ed.models.ClassSession;
 import com.utkarsh.ed.models.SessionStatus;
 import com.utkarsh.ed.repositories.ClassScheduleRepository;
 import com.utkarsh.ed.repositories.ClassScheduleSpecification;
+import com.utkarsh.ed.repositories.ClassSessionRepository;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Objects;
-
-import com.utkarsh.ed.repositories.ClassSessionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -35,7 +34,9 @@ public class ClassScheduleService {
     private final ClassScheduleMapper classScheduleMapper;
 
     public ClassScheduleService(
-            ClassScheduleRepository classScheduleRepository, ClassSessionRepository classSessionRepository, ClassScheduleMapper classScheduleMapper) {
+            ClassScheduleRepository classScheduleRepository,
+            ClassSessionRepository classSessionRepository,
+            ClassScheduleMapper classScheduleMapper) {
         this.classScheduleRepository = classScheduleRepository;
         this.classSessionRepository = classSessionRepository;
         this.classScheduleMapper = classScheduleMapper;

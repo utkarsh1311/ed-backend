@@ -2,8 +2,12 @@ package com.utkarsh.ed.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
+@SQLDelete(sql = "UPDATE subject SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Subject extends BaseEntity {
 
     @Column(unique = true, name = "name")

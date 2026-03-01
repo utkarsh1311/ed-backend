@@ -1,8 +1,7 @@
 package com.utkarsh.ed.services;
 
-import com.utkarsh.ed.dto.ClassSession.ClassSessionFilter;
-import com.utkarsh.ed.dto.ClassSession.SessionCompletionRequestDTO;
-import com.utkarsh.ed.dto.ClassSession.SessionDetailResponseDTO;
+import com.utkarsh.ed.dto.ClassSession.*;
+import com.utkarsh.ed.exceptions.BusinessRuleException;
 import com.utkarsh.ed.exceptions.ResourceNotFoundException;
 import com.utkarsh.ed.mappers.ClassSessionMapper;
 import com.utkarsh.ed.models.ClassSession;
@@ -10,6 +9,8 @@ import com.utkarsh.ed.models.SessionStatus;
 import com.utkarsh.ed.repositories.ClassSessionRepository;
 import com.utkarsh.ed.repositories.ClassSessionSpecification;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,9 @@ public class ClassSessionService {
             return classSessionMapper.toDetailDTO(classSession);
         }
 
+        // A RESCHEDULED session is still completable — it just has a different slot.
+        // SCHEDULED and RESCHEDULED are both valid pre-completion states.
+
         if (sessionCompletionRequestDTO.actualEndAt().isBefore(sessionCompletionRequestDTO.actualStartAt())) {
             throw new IllegalArgumentException("Actual end time cannot be before start time.");
         }
@@ -75,4 +79,92 @@ public class ClassSessionService {
         classSessionRepository.save(classSession);
         return classSessionMapper.toDetailDTO(classSession);
     }
+
+
+    @Transactional
+    public SessionDetailResponseDTO cancelSession(
+            Long sessionId, SessionCancellationRequestDTO sessionCancellationRequestDTO) {
+        ClassSession classSession = classSessionRepository
+                .findById(sessionId)
+                .orElseThrow(() -> new ResourceNotFoundException("ClassSession with ID: " + sessionId + " not found"));
+
+        if (classSession.getStatus() == SessionStatus.CANCELLED) {
+            throw new IllegalStateException("Session is already cancelled.");
+        }
+        if (classSession.getStatus() == SessionStatus.COMPLETED) {
+            throw new IllegalStateException("Cannot cancel a session that is already completed.");
+        }
+
+        classSession.setStatus(SessionStatus.CANCELLED);
+        classSession.setCancellationReason(sessionCancellationRequestDTO.cancellationReason());
+        classSessionRepository.save(classSession);
+        return classSessionMapper.toDetailDTO(classSession);
+    }
+
+    @Transactional
+    public SessionDetailResponseDTO rescheduleSession(Long sessionId, SessionRescheduleRequestDTO dto) {
+        ClassSession session = classSessionRepository
+                .findById(sessionId)
+                .orElseThrow(() -> new ResourceNotFoundException("ClassSession with ID: " + sessionId + " not found"));
+
+        // ── 1. Status guard ───────────────────────────────────────────────────────
+        if (session.getStatus() == SessionStatus.CANCELLED) {
+            throw new IllegalStateException("Cannot reschedule a cancelled session.");
+        }
+        if (session.getStatus() == SessionStatus.COMPLETED) {
+            throw new IllegalStateException("Cannot reschedule a completed session.");
+        }
+
+        LocalDateTime currentSlot = session.getScheduledAt();
+        LocalDateTime newSlot = dto.newScheduledAt();
+
+        // ── 2. Same-slot guard ────────────────────────────────────────────────────
+        if (newSlot.equals(currentSlot)) {
+            throw new BusinessRuleException("New scheduled time is the same as the current slot.");
+        }
+
+        // ── 3. Within-week guard ──────────────────────────────────────────────────
+        // A session may only be moved within its own occurrence window.
+        // The next occurrence of any session is exactly 7 days after the current slot;
+        // rescheduling past that would collide with the auto-generated next session.
+        LocalDateTime weekDeadline = currentSlot.plusDays(7);
+        if (!newSlot.isBefore(weekDeadline)) {
+            throw new BusinessRuleException(
+                    "Session can only be rescheduled within the same week. New time must be before "
+                            + weekDeadline + ".");
+        }
+
+        // ── 4. Conflict detection ─────────────────────────────────────────────────
+        // Excluded statuses: CANCELLED sessions don't occupy a slot.
+        List<SessionStatus> ignoredStatuses = List.of(SessionStatus.CANCELLED);
+        int durationMinutes = session.getClassSchedule().getDurationMinutes();
+        LocalDateTime newSlotEnd = newSlot.plusMinutes(durationMinutes);
+
+        Long teacherId = session.getTeacher().getId();
+        if (classSessionRepository.existsConflictForTeacher(
+                session.getId(), teacherId, ignoredStatuses, newSlot, newSlotEnd)) {
+            throw new BusinessRuleException(
+                    "Teacher already has another session scheduled during the requested time slot.");
+        }
+
+        Long studentId = session.getClassSchedule().getStudent().getId();
+        if (classSessionRepository.existsConflictForStudent(
+                session.getId(), studentId, ignoredStatuses, newSlot, newSlotEnd)) {
+            throw new BusinessRuleException(
+                    "Student already has another session scheduled during the requested time slot.");
+        }
+
+        // ── 5. Apply reschedule ───────────────────────────────────────────────────
+        // Always overwrite so originalScheduledAt reflects the immediately-previous slot.
+        session.setOriginalScheduledAt(currentSlot);
+        session.setScheduledAt(newSlot);
+        session.setStatus(SessionStatus.RESCHEDULED);
+
+        classSessionRepository.save(session);
+        logger.info("Session {} rescheduled from {} to {}", sessionId, currentSlot, newSlot);
+        return classSessionMapper.toDetailDTO(session);
+    }
+
+
+
 }

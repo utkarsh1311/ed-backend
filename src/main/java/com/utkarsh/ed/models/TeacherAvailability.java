@@ -1,6 +1,7 @@
 package com.utkarsh.ed.models;
 
 import jakarta.persistence.*;
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -15,7 +16,7 @@ public class TeacherAvailability extends BaseEntity {
     private Teacher teacher;
 
     @Enumerated(EnumType.STRING)
-    private WeekDay dayOfWeek;
+    private DayOfWeek dayOfWeek;
 
     private LocalTime startTime;
     private LocalTime endTime;
@@ -32,11 +33,11 @@ public class TeacherAvailability extends BaseEntity {
         this.teacher = teacher;
     }
 
-    public WeekDay getDayOfWeek() {
+    public DayOfWeek getDayOfWeek() {
         return dayOfWeek;
     }
 
-    public void setDayOfWeek(WeekDay dayOfWeek) {
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
     }
 

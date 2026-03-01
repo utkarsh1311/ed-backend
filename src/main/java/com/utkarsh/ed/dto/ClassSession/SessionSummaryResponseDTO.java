@@ -10,5 +10,7 @@ public record SessionSummaryResponseDTO(
         String studentName, // Flattened from ClassSchedule -> Student
         String subjectName, // Flattened from ClassSchedule -> Subject
         LocalDateTime scheduledAt,
+        /** The slot this session was rescheduled FROM. null means never rescheduled. */
+        LocalDateTime originalScheduledAt,
         SessionStatus status,
         boolean isTest) {}

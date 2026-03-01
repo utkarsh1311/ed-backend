@@ -14,11 +14,13 @@ public interface ClassSessionMapper {
     @Mapping(source = "teacher.name", target = "teacherName")
     @Mapping(source = "classSchedule.student.name", target = "studentName")
     @Mapping(source = "classSchedule.subject.name", target = "subjectName")
+    @Mapping(source = "test", target = "isTest")
     SessionSummaryResponseDTO toSummaryDTO(ClassSession session);
 
     // 2. The Detail View (For single session views and parent reports)
     @Mapping(source = "teacher.name", target = "teacherName")
     @Mapping(source = "classSchedule.student.name", target = "studentName")
     @Mapping(source = "classSchedule.subject.name", target = "subjectName")
+    @Mapping(source = "test", target = "isTest")
     SessionDetailResponseDTO toDetailDTO(ClassSession session);
 }

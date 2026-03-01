@@ -3,8 +3,12 @@ package com.utkarsh.ed.models;
 import jakarta.persistence.*;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
+@SQLDelete(sql = "UPDATE class_schedules SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 @Table(name = "class_schedules")
 public class ClassSchedule extends BaseEntity {
 

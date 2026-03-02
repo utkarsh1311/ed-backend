@@ -15,9 +15,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @ApiResponses({
     @ApiResponse(responseCode = "201", description = "Created successfully"),
-    @ApiResponse(responseCode = "400", description = "Validation failed",
-        content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-    @ApiResponse(responseCode = "409", description = "Resource already exists",
-        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(
+            responseCode = "400",
+            description = "Validation failed",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    @ApiResponse(
+            responseCode = "409",
+            description = "Resource already exists",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 })
 public @interface ApiResponsesCreate {}

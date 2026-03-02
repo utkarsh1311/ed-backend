@@ -26,7 +26,8 @@ public interface ClassSessionRepository
      * Returns true if the teacher already has a non-excluded session that starts within
      * [windowStart, windowEnd), excluding the session being rescheduled itself.
      */
-    @Query("""
+    @Query(
+            """
             SELECT CASE WHEN COUNT(cs) > 0 THEN true ELSE false END
             FROM ClassSession cs
             WHERE cs.id <> :excludeId
@@ -46,7 +47,8 @@ public interface ClassSessionRepository
      * Returns true if the student already has a non-excluded session that starts within
      * [windowStart, windowEnd), excluding the session being rescheduled itself.
      */
-    @Query("""
+    @Query(
+            """
             SELECT CASE WHEN COUNT(cs) > 0 THEN true ELSE false END
             FROM ClassSession cs
             WHERE cs.id <> :excludeId

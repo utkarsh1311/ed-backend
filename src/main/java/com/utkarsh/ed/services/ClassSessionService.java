@@ -80,7 +80,6 @@ public class ClassSessionService {
         return classSessionMapper.toDetailDTO(classSession);
     }
 
-
     @Transactional
     public SessionDetailResponseDTO cancelSession(
             Long sessionId, SessionCancellationRequestDTO sessionCancellationRequestDTO) {
@@ -130,8 +129,8 @@ public class ClassSessionService {
         LocalDateTime weekDeadline = currentSlot.plusDays(7);
         if (!newSlot.isBefore(weekDeadline)) {
             throw new BusinessRuleException(
-                    "Session can only be rescheduled within the same week. New time must be before "
-                            + weekDeadline + ".");
+                    "Session can only be rescheduled within the same week. New time must be before " + weekDeadline
+                            + ".");
         }
 
         // ── 4. Conflict detection ─────────────────────────────────────────────────
@@ -164,7 +163,4 @@ public class ClassSessionService {
         logger.info("Session {} rescheduled from {} to {}", sessionId, currentSlot, newSlot);
         return classSessionMapper.toDetailDTO(session);
     }
-
-
-
 }

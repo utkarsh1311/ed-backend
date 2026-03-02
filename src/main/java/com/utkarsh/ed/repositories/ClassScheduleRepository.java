@@ -22,6 +22,9 @@ public interface ClassScheduleRepository
     Optional<ClassSchedule> findById(Long id);
 
     @EntityGraph(attributePaths = {"student", "teacher", "subject"})
+    Page<ClassSchedule> findAllByTeacher(Specification<ClassSchedule> spec, Pageable pageable, Long id);
+
+    @EntityGraph(attributePaths = {"student", "teacher", "subject"})
     Page<ClassSchedule> findAll(Specification<ClassSchedule> spec, Pageable pageable);
 
     @Query("SELECT COUNT(cs) > 0 FROM ClassSchedule cs "

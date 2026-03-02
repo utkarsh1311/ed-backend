@@ -18,7 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Class Sessions", description = "Individual session occurrences. Auto-generated from Class Schedules weekly.")
+@Tag(
+        name = "Class Sessions",
+        description = "Individual session occurrences. Auto-generated from Class Schedules weekly.")
 @RestController
 @RequestMapping("/api/v1/class-sessions")
 public class ClassSessionController {
@@ -29,8 +31,9 @@ public class ClassSessionController {
         this.classSessionService = classSessionService;
     }
 
-    @Operation(summary = "List all class sessions",
-        description = "Filterable and paginated. Date range filters on scheduledAt (current actual slot).")
+    @Operation(
+            summary = "List all class sessions",
+            description = "Filterable and paginated. Date range filters on scheduledAt (current actual slot).")
     @GetMapping
     public ResponseEntity<PagedResponse<SessionDetailResponseDTO>> getAllSessions(
             @ParameterObject @ModelAttribute ClassSessionFilter filter, Pageable pageable) {
@@ -39,11 +42,15 @@ public class ClassSessionController {
     }
 
     // TODO: teacherID should come from JWT principal once auth is implemented
-    @Operation(summary = "Complete a session",
-        description = "Marks a SCHEDULED or RESCHEDULED session as COMPLETED. Only the assigned teacher may complete a session.")
+    @Operation(
+            summary = "Complete a session",
+            description =
+                    "Marks a SCHEDULED or RESCHEDULED session as COMPLETED. Only the assigned teacher may complete a session.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Session completed"),
-        @ApiResponse(responseCode = "400", description = "Validation failed (e.g. end before start, missing test score)"),
+        @ApiResponse(
+                responseCode = "400",
+                description = "Validation failed (e.g. end before start, missing test score)"),
         @ApiResponse(responseCode = "403", description = "Caller is not the assigned teacher"),
         @ApiResponse(responseCode = "404", description = "Session not found"),
         @ApiResponse(responseCode = "409", description = "Session is already cancelled")
@@ -71,14 +78,18 @@ public class ClassSessionController {
         return ResponseEntity.ok(cancelledSession);
     }
 
-    @Operation(summary = "Reschedule a session",
-        description = "New time must be in the future and within 7 days of current scheduledAt. Validates no teacher/student conflicts.")
+    @Operation(
+            summary = "Reschedule a session",
+            description =
+                    "New time must be in the future and within 7 days of current scheduledAt. Validates no teacher/student conflicts.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Session rescheduled"),
         @ApiResponse(responseCode = "400", description = "New time is not in the future"),
         @ApiResponse(responseCode = "404", description = "Session not found"),
         @ApiResponse(responseCode = "409", description = "Session is cancelled or completed"),
-        @ApiResponse(responseCode = "422", description = "Same slot / outside week boundary / teacher or student conflict")
+        @ApiResponse(
+                responseCode = "422",
+                description = "Same slot / outside week boundary / teacher or student conflict")
     })
     @PostMapping("/{id}/reschedule")
     public ResponseEntity<SessionDetailResponseDTO> rescheduleSession(

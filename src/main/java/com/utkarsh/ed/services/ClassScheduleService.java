@@ -6,12 +6,11 @@ import com.utkarsh.ed.dto.ClassSchedule.ClassScheduleResponseDTO;
 import com.utkarsh.ed.exceptions.BusinessRuleException;
 import com.utkarsh.ed.exceptions.ResourceNotFoundException;
 import com.utkarsh.ed.mappers.ClassScheduleMapper;
-import com.utkarsh.ed.models.ClassSchedule;
-import com.utkarsh.ed.models.ClassSession;
-import com.utkarsh.ed.models.SessionStatus;
+import com.utkarsh.ed.models.*;
 import com.utkarsh.ed.repositories.ClassScheduleRepository;
 import com.utkarsh.ed.repositories.ClassScheduleSpecification;
 import com.utkarsh.ed.repositories.ClassSessionRepository;
+import com.utkarsh.ed.repositories.TeacherRepository;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,14 +32,17 @@ public class ClassScheduleService {
 
     private final ClassScheduleRepository classScheduleRepository;
     private final ClassSessionRepository classSessionRepository;
+    private final TeacherRepository teacherRepository;
     private final ClassScheduleMapper classScheduleMapper;
 
     public ClassScheduleService(
             ClassScheduleRepository classScheduleRepository,
             ClassSessionRepository classSessionRepository,
+            TeacherRepository teacherRepository,
             ClassScheduleMapper classScheduleMapper) {
         this.classScheduleRepository = classScheduleRepository;
         this.classSessionRepository = classSessionRepository;
+        this.teacherRepository = teacherRepository;
         this.classScheduleMapper = classScheduleMapper;
     }
 
@@ -55,8 +59,8 @@ public class ClassScheduleService {
 
     private void createInitialClassSessions(ClassSchedule classSchedule) {
         logger.info("Creating Initial class for ClassSchedule with ID: {}", classSchedule.getId());
-        LocalDate nextOccuranceDate = LocalDate.now().with(TemporalAdjusters.next(classSchedule.getDayOfWeek()));
-        LocalDateTime scheduledAt = LocalDateTime.of(nextOccuranceDate, classSchedule.getStartTime());
+        LocalDate nextOccurrenceDate = LocalDate.now().with(TemporalAdjusters.next(classSchedule.getDayOfWeek()));
+        LocalDateTime scheduledAt = LocalDateTime.of(nextOccurrenceDate, classSchedule.getStartTime());
 
         ClassSession classSession = new ClassSession(
                 classSchedule,
@@ -99,17 +103,43 @@ public class ClassScheduleService {
     }
 
     // Get all classSchedules with optional filters
-    public Page<ClassScheduleResponseDTO> getAllClassSchedules(ClassScheduleFilter filter, Pageable pageable) {
-        Page<ClassSchedule> classSchedules =
-                classScheduleRepository.findAll(ClassScheduleSpecification.build(filter), pageable);
+    public Page<ClassScheduleResponseDTO> getAllClassSchedules(
+            ClassScheduleFilter filter, Pageable pageable, AppUser currentUser) {
+
+        Specification<ClassSchedule> spec = ClassScheduleSpecification.build(filter);
+
+        if (!currentUser.isAdmin()) {
+
+            Teacher teacher = teacherRepository
+                    .findByBusinessEmail(currentUser.getUsername())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Teacher with email: " + currentUser.getUsername() + " not found."));
+
+            Specification<ClassSchedule> teacherSpec = (root, query, cb) -> cb.equal(root.get("teacher"), teacher);
+
+            spec = spec.and(teacherSpec);
+        }
+
+        var classSchedules = classScheduleRepository.findAll(spec, pageable);
         return classSchedules.map(classScheduleMapper::toResponse);
     }
 
     // get a class Schedule
-    public ClassScheduleResponseDTO getClassScheduleByID(Long id) {
+    public ClassScheduleResponseDTO getClassScheduleByID(Long id, AppUser currentUser) {
+
         ClassSchedule classSchedule = classScheduleRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Class Schedule not found with ID: " + id));
+
+        if (currentUser.isTeacher()) {
+            String currentUserEmail = currentUser.getEmail();
+            String classTeacherEmail = classSchedule.getTeacher().getBusinessMail();
+
+            if (!currentUserEmail.equals(classTeacherEmail)) {
+                throw new AccessDeniedException("You are not authorized to access this class schedule.");
+            }
+        }
+
         return classScheduleMapper.toResponse(classSchedule);
     }
 

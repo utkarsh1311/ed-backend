@@ -22,6 +22,10 @@ public class Teacher extends BaseEntity {
 
     private String phone;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "app_user_id", unique = true)
+    private AppUser appUser;
+
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
     private List<TeacherAvailability> availabilities = new ArrayList<>();
 
@@ -73,5 +77,13 @@ public class Teacher extends BaseEntity {
 
     public void setBusinessMail(String businessMail) {
         this.businessMail = businessMail;
+    }
+
+    public AppUser getAppUser() {
+        return appUser;
+    }
+
+    public void setAppUser(AppUser appUser) {
+        this.appUser = appUser;
     }
 }

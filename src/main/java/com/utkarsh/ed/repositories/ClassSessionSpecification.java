@@ -37,8 +37,8 @@ public class ClassSessionSpecification {
             // recurring dayOfWeek. This correctly handles rescheduled sessions that
             // moved to a different day.
             if (filter.weekdays() != null && !filter.weekdays().isEmpty()) {
-                Expression<Integer> dayOfWeek = cb.function(
-                        "EXTRACT", Integer.class, cb.literal("DOW"), root.get("scheduledAt"));
+                Expression<Integer> dayOfWeek =
+                        cb.function("EXTRACT", Integer.class, cb.literal("DOW"), root.get("scheduledAt"));
                 // PostgreSQL DOW: Sunday=0 .. Saturday=6
                 // java.time.DayOfWeek: Monday=1 .. Sunday=7
                 // Map Java DayOfWeek values to PostgreSQL DOW values

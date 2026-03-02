@@ -15,7 +15,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @ApiResponses({
     @ApiResponse(responseCode = "204", description = "Deleted successfully"),
-    @ApiResponse(responseCode = "404", description = "Resource not found",
-        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(
+            responseCode = "404",
+            description = "Resource not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 })
 public @interface ApiResponsesDelete {}

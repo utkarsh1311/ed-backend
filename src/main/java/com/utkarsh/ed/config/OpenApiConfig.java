@@ -32,10 +32,7 @@ public class OpenApiConfig {
                                 The server timezone is forced to `Asia/Kolkata`.
                                 """)
                         .version("v1.0.0")
-                        .contact(new Contact()
-                                .name("Utkarsh Maurya")
-                                .email("utkarsh@ed.com")))
-                .servers(List.of(
-                        new Server().url("http://localhost:8080").description("Local development")));
+                        .contact(new Contact().name("Utkarsh Maurya").email("utkarsh@ed.com")))
+                .servers(List.of(new Server().url("http://localhost:8080").description("Local development")));
     }
 }
